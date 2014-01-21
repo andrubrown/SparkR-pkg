@@ -122,13 +122,13 @@ includePackage <- function(sc, pkg) {
   .sparkREnv[[".packages"]] <- packages
 }
 
-#' @title Broadcast a variable to all workers 
-#' 
+#' @title Broadcast a variable to all workers
+#'
 #' @description
 #' Broadcast a read-only variable to the cluster, returning a \code{Broadcast}
 #' object for reading it in distributed functions.
 #'
-#' @param sc Spark Context to use 
+#' @param sc Spark Context to use
 #' @param object Object to be broadcast
 #' @export
 #' @examples
@@ -139,7 +139,7 @@ includePackage <- function(sc, pkg) {
 #' # Large Matrix object that we want to broadcast
 #' randomMat <- matrix(nrow=100, ncol=10, data=rnorm(1000))
 #' randomMatBr <- broadcast(sc, randomMat)
-#' 
+#'
 #' # Use the broadcast variable inside the function
 #' useBroadcast <- function(x) {
 #'   sum(value(randomMatBr) * x)
@@ -156,4 +156,24 @@ broadcast <- function(sc, object) {
 
   id <- as.character(.jsimplify(.jcall(jBroadcast, "J", "id")))
   Broadcast(id, object, jBroadcast, objName)
+}
+
+#' @title Set the checkpoint directory
+#'
+#' Set the directory under which RDDs are going to be checkpointed. The
+#' directory must be a HDFS path if running on a cluster.
+#'
+#' @param sc Spark Context to use
+#' @param dirName Directory path
+#' @export
+#' @examples
+#'\dontrun{
+#' sc <- sparkR.init()
+#' setCheckpointDir(sc, "checkpoints")
+#' rdd <- parallelize(sc, 1:2, 2L)
+#' checkpoint(rdd)
+#'}
+setCheckpointDir <- function(sc, dirName) {
+  ssc <- .jcall(sc, "Lorg/apache/spark/SparkContext;", "sc")
+  .jcall(ssc, "V", "setCheckpointDir", dirName)
 }

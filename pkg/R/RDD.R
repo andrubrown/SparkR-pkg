@@ -18,10 +18,9 @@ setClass("RDD",
                       serialized = "logical"))
 
 setMethod("initialize", "RDD", function(.Object, jrdd, serialized, isCached, isCheckpointed) {
-  # We use an environment to store mutable states inside an RDD object (currently
-  # only `isCached'). Note that R's call-by-value semantics makes modifying slots
-  # inside an object (passed as an argument into a function, such as cache())
-  # difficult.
+  # We use an environment to store mutable states inside an RDD object. Note
+  # that R's call-by-value semantics makes modifying slots inside an object
+  # (passed as an argument into a function, such as cache()) difficult.
   .Object@env <- new.env()
   .Object@env$isCached <- isCached
   .Object@env$isCheckpointed <- isCheckpointed
@@ -104,11 +103,10 @@ setMethod("unpersist",
 #' Checkpoint an RDD
 #'
 #' Mark this RDD for checkpointing. It will be saved to a file inside the
-#' checkpoint directory set with SparkContext.setCheckpointDir() and all
-#' references to its parent RDDs will be removed. This function must be called
-#' before any job has been executed on this RDD. It is strongly recommended that
-#' this RDD is persisted in memory, otherwise saving it on a file will require
-#' recomputation.
+#' checkpoint directory set with setCheckpointDir() and all references to its
+#' parent RDDs will be removed. This function must be called before any job has
+#' been executed on this RDD. It is strongly recommended that this RDD is
+#' persisted in memory, otherwise saving it on a file will require recomputation.
 #'
 #' @param rdd The RDD to checkpoint
 #' @rdname checkpoint-methods
@@ -116,6 +114,7 @@ setMethod("unpersist",
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
+#' setCheckpointDir(sc, "checkpoints")
 #' rdd <- parallelize(sc, 1:10, 2L)
 #' checkpoint(rdd)
 #'}
